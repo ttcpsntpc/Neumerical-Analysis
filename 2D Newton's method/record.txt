@@ -1,0 +1,4 @@
+遇到問題
+1.算出來後每個都是converge 但把值輸出之後發現infinite number跟NaN一樣是converge 所以要檢查一下edge case -> jacobian前的coefficient分母要判斷有沒有太小，太小可能會變0，甚至除完後數值也會變超級大
+2.replot不太方便多次使用，容易出錯，最後只好一次串完要畫的所有圖片，再一次畫完
+3.加上的percubation一開始x, y都加固定數值導致太對稱，只有一半的點變成convergence -> 加上不同的數值後就可以正常修正了
