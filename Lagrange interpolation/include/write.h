@@ -36,7 +36,7 @@ void writeRGBImage(const char *filename, ImageRGB image) {
         for(int j = 0; j < image.width; j++) {
             for(int c = 0; c < 3; c++) {
                 fprintf(file, "%.6f", image.data[i][j][c]);
-                if(c < 2 && j < image.width - 1) {
+                if(c < 2 || j < image.width - 1) {
                     fprintf(file, " ");
                 }
             }
