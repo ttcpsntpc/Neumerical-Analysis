@@ -80,8 +80,8 @@ static ImageRGB readRGBImage(const char* filename) {
     for (int i = 0; i < image.height; i++) {
         image.data[i] = (float**)malloc(image.width * sizeof(float*));
         for (int j = 0; j < image.width; j++) {
+            image.data[i][j] = (float*)malloc(3 * sizeof(float));
             for(int c = 0; c < 3; c++) {
-                image.data[i][j] = (float*)malloc(3 * sizeof(float));
 				if (fscanf(file, "%f", &image.data[i][j][c])!= 1) {
                     fprintf(stderr, "Invalid pixel data at row %d, col %d, channel %d\n", i, j, c);
                     // ?M?z???^??v??
