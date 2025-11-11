@@ -1,0 +1,8 @@
+[
+{
+  "directory": "D:/Neumerical-Analysis/Lagrange interpolation/build",
+  "command": "C:\\winlibs\\mingw64\\bin\\g++.exe  @CMakeFiles/Language.dir/includes_CXX.rsp -g -o CMakeFiles\\Language.dir\\src\\opencv.cpp.obj -c \"D:\\Neumerical-Analysis\\Lagrange interpolation\\src\\opencv.cpp\"",
+  "file": "D:/Neumerical-Analysis/Lagrange interpolation/src/opencv.cpp",
+  "output": "CMakeFiles/Language.dir/src/opencv.cpp.obj"
+}
+]

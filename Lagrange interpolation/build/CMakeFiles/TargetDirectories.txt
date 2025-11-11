@@ -1,0 +1,3 @@
+D:/Neumerical-Analysis/Lagrange interpolation/build/CMakeFiles/Language.dir
+D:/Neumerical-Analysis/Lagrange interpolation/build/CMakeFiles/edit_cache.dir
+D:/Neumerical-Analysis/Lagrange interpolation/build/CMakeFiles/rebuild_cache.dir
