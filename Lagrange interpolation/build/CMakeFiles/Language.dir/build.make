@@ -68,29 +68,29 @@ include CMakeFiles/Language.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Language.dir/flags.make
 
-CMakeFiles/Language.dir/src/opencv.cpp.obj: CMakeFiles/Language.dir/flags.make
-CMakeFiles/Language.dir/src/opencv.cpp.obj: CMakeFiles/Language.dir/includes_CXX.rsp
-CMakeFiles/Language.dir/src/opencv.cpp.obj: D:/Neumerical-Analysis/Lagrange\ interpolation/src/opencv.cpp
-CMakeFiles/Language.dir/src/opencv.cpp.obj: CMakeFiles/Language.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="D:\Neumerical-Analysis\Lagrange interpolation\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Language.dir/src/opencv.cpp.obj"
-	C:\winlibs\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Language.dir/src/opencv.cpp.obj -MF CMakeFiles\Language.dir\src\opencv.cpp.obj.d -o CMakeFiles\Language.dir\src\opencv.cpp.obj -c "D:\Neumerical-Analysis\Lagrange interpolation\src\opencv.cpp"
+CMakeFiles/Language.dir/src/spline.cpp.obj: CMakeFiles/Language.dir/flags.make
+CMakeFiles/Language.dir/src/spline.cpp.obj: CMakeFiles/Language.dir/includes_CXX.rsp
+CMakeFiles/Language.dir/src/spline.cpp.obj: D:/Neumerical-Analysis/Lagrange\ interpolation/src/spline.cpp
+CMakeFiles/Language.dir/src/spline.cpp.obj: CMakeFiles/Language.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="D:\Neumerical-Analysis\Lagrange interpolation\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/Language.dir/src/spline.cpp.obj"
+	C:\winlibs\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Language.dir/src/spline.cpp.obj -MF CMakeFiles\Language.dir\src\spline.cpp.obj.d -o CMakeFiles\Language.dir\src\spline.cpp.obj -c "D:\Neumerical-Analysis\Lagrange interpolation\src\spline.cpp"
 
-CMakeFiles/Language.dir/src/opencv.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Language.dir/src/opencv.cpp.i"
-	C:\winlibs\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "D:\Neumerical-Analysis\Lagrange interpolation\src\opencv.cpp" > CMakeFiles\Language.dir\src\opencv.cpp.i
+CMakeFiles/Language.dir/src/spline.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Language.dir/src/spline.cpp.i"
+	C:\winlibs\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "D:\Neumerical-Analysis\Lagrange interpolation\src\spline.cpp" > CMakeFiles\Language.dir\src\spline.cpp.i
 
-CMakeFiles/Language.dir/src/opencv.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Language.dir/src/opencv.cpp.s"
-	C:\winlibs\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "D:\Neumerical-Analysis\Lagrange interpolation\src\opencv.cpp" -o CMakeFiles\Language.dir\src\opencv.cpp.s
+CMakeFiles/Language.dir/src/spline.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Language.dir/src/spline.cpp.s"
+	C:\winlibs\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "D:\Neumerical-Analysis\Lagrange interpolation\src\spline.cpp" -o CMakeFiles\Language.dir\src\spline.cpp.s
 
 # Object files for target Language
 Language_OBJECTS = \
-"CMakeFiles/Language.dir/src/opencv.cpp.obj"
+"CMakeFiles/Language.dir/src/spline.cpp.obj"
 
 # External object files for target Language
 Language_EXTERNAL_OBJECTS =
 
-Language.exe: CMakeFiles/Language.dir/src/opencv.cpp.obj
+Language.exe: CMakeFiles/Language.dir/src/spline.cpp.obj
 Language.exe: CMakeFiles/Language.dir/build.make
 Language.exe: C:/dev/vcpkg/installed/x64-mingw-static/debug/lib/libopencv_calib3d4d.a
 Language.exe: C:/dev/vcpkg/installed/x64-mingw-static/debug/lib/libopencv_core4d.a

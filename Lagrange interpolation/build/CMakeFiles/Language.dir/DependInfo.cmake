@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "D:/Neumerical-Analysis/Lagrange interpolation/src/opencv.cpp" "CMakeFiles/Language.dir/src/opencv.cpp.obj" "gcc" "CMakeFiles/Language.dir/src/opencv.cpp.obj.d"
+  "D:/Neumerical-Analysis/Lagrange interpolation/src/spline.cpp" "CMakeFiles/Language.dir/src/spline.cpp.obj" "gcc" "CMakeFiles/Language.dir/src/spline.cpp.obj.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

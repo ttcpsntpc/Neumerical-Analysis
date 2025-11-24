@@ -128,29 +128,29 @@ Language/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Language.dir\build.make CMakeFiles/Language.dir/build
 .PHONY : Language/fast
 
-src/opencv.obj: src/opencv.cpp.obj
-.PHONY : src/opencv.obj
+src/spline.obj: src/spline.cpp.obj
+.PHONY : src/spline.obj
 
 # target to build an object file
-src/opencv.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Language.dir\build.make CMakeFiles/Language.dir/src/opencv.cpp.obj
-.PHONY : src/opencv.cpp.obj
+src/spline.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Language.dir\build.make CMakeFiles/Language.dir/src/spline.cpp.obj
+.PHONY : src/spline.cpp.obj
 
-src/opencv.i: src/opencv.cpp.i
-.PHONY : src/opencv.i
+src/spline.i: src/spline.cpp.i
+.PHONY : src/spline.i
 
 # target to preprocess a source file
-src/opencv.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Language.dir\build.make CMakeFiles/Language.dir/src/opencv.cpp.i
-.PHONY : src/opencv.cpp.i
+src/spline.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Language.dir\build.make CMakeFiles/Language.dir/src/spline.cpp.i
+.PHONY : src/spline.cpp.i
 
-src/opencv.s: src/opencv.cpp.s
-.PHONY : src/opencv.s
+src/spline.s: src/spline.cpp.s
+.PHONY : src/spline.s
 
 # target to generate assembly for a file
-src/opencv.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Language.dir\build.make CMakeFiles/Language.dir/src/opencv.cpp.s
-.PHONY : src/opencv.cpp.s
+src/spline.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Language.dir\build.make CMakeFiles/Language.dir/src/spline.cpp.s
+.PHONY : src/spline.cpp.s
 
 # Help Target
 help:
@@ -161,9 +161,9 @@ help:
 	@echo ... edit_cache
 	@echo ... rebuild_cache
 	@echo ... Language
-	@echo ... src/opencv.obj
-	@echo ... src/opencv.i
-	@echo ... src/opencv.s
+	@echo ... src/spline.obj
+	@echo ... src/spline.i
+	@echo ... src/spline.s
 .PHONY : help
 
 

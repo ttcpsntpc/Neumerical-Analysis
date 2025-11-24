@@ -7,7 +7,7 @@
 #include "write.h"
 #include "spline.h"
 #include "others.h"
-#define M_TARGET 512
+#define M_TARGET 256
 
 using Clock = std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
@@ -78,7 +78,7 @@ int main() {
     
 
     char output_filename[20];
-    sprintf(output_filename, "../raw/interpolation/tt.txt");
+    sprintf(output_filename, "../raw/interpolation 256/spline.txt");
     writeRGBImage(output_filename, I3);
 
     freeImageRGB(&I3);

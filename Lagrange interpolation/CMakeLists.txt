@@ -9,7 +9,7 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(Language 
-    src/opencv.cpp    
+    src/spline.cpp    
 )
 
 target_include_directories(Language PUBLIC include)

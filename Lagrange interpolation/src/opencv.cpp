@@ -11,7 +11,7 @@
 #include "write.h"
 #include "block_method.h"
 #include "others.h"
-#define M_TARGET 512
+#define M_TARGET 256
 
 using Clock = std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
@@ -84,7 +84,8 @@ int main() {
     printf("Linear 執行時間 (秒, 小數): %.6f s\n", s_double.count());
 
     ImageRGB I_out = cvMatToImageRgb(mat_out);
-    sprintf(output_filename, "../raw/interpolation/linear.txt");
+    sprintf(output_filename, "../raw/interpolation 256/linear.txt");
+    writeRGBImage(output_filename, I_out);
 
     // cubic interpolation
     t1 = Clock::now();
@@ -95,7 +96,7 @@ int main() {
     printf("Cubic 執行時間 (秒, 小數): %.6f s\n", s_double.count());
 
     I_out = cvMatToImageRgb(mat_out);
-    sprintf(output_filename, "../raw/interpolation/cubic.txt");
+    sprintf(output_filename, "../raw/interpolation 256/cubic.txt");
     writeRGBImage(output_filename, I_out);
     
     // lanczos interpolation
@@ -107,6 +108,6 @@ int main() {
     printf("Lanczos 執行時間 (秒, 小數): %.6f s\n", s_double.count());
 
     I_out = cvMatToImageRgb(mat_out);
-    sprintf(output_filename, "../raw/interpolation/lanczos.txt");
+    sprintf(output_filename, "../raw/interpolation 256/lanczos.txt");
     writeRGBImage(output_filename, I_out);
 }

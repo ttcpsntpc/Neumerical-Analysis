@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Language.dir/src/opencv.cpp.obj"
-  "CMakeFiles/Language.dir/src/opencv.cpp.obj.d"
+  "CMakeFiles/Language.dir/src/spline.cpp.obj"
+  "CMakeFiles/Language.dir/src/spline.cpp.obj.d"
   "Language.exe"
   "Language.exe.manifest"
   "Language.pdb"
