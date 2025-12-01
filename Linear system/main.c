@@ -1,17 +1,18 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include "gnuplot.h"
 #define PI 3.14159265358979323846
 
 int r, n, m[5] = {5, 6, 7, 8, 9}; // degree of polynomial
 double A[16][16]; // coefficient matrix
 double B[16][16]; // A^T * A
-double cx[16]; // unknown vector
-double cy[16]; // unknown vector
+double cx[16]; // unknown vector -> a0, a1, a2, ...
+double cy[16]; // unknown vector -> b0, b1, b2, ...
 double dx[16]; // A^T * x
 double dy[16]; // A^T * y
 double t[16]; // sample points
-double x[16], y[16]; // answer points
+double x[16], y[16]; // function values
 
 void initial(int degree) {
     r = 10;  // radius
@@ -21,7 +22,7 @@ void initial(int degree) {
         x[i] = r * cos(2 * PI / n * i);
         y[i] = r * sin(2 * PI / n * i);
 
-        for(int j = 0; j <= degree; j++) {
+        for(int j = 0; j < 16; j++) { // initial all A matrix elements at once
             A[i][j] = pow(t[i], j);
         }
     }
@@ -101,77 +102,93 @@ void gaussian_elimination(int rows, int cols) {
     }
 }
 
-void horner_s_algorithm(int samples, int degree) {
-    FILE *fp = fopen("gaussian.txt", "w");
-    double ps = 2 * PI / samples;
+void horner_s_algorithm(int samples, int degree, FILE *fp, FILE *err_x_fp, FILE *err_y_fp) {
+    double t_s = 2 * PI / (samples - 1);
+    double x_2_norm = 0.0, y_2_norm = 0.0;
+    double x_inf_norm = 0.0, y_inf_norm = 0.0;
     for(int i = 0; i < samples; i++) {
-        double px = ps * i;
-        double py = ps * i;
-        for(int j = degree; j >= 0; j--) {
-            px = cx[j] + px * px;
-            py = cy[j] + py * py;
+        double t_i = t_s * i;
+        double fx = cx[degree];
+        double fy = cy[degree];
+        for(int j = degree - 1; j >= 0; j--) {
+            fx = fx * t_i + cx[j];
+            fy = fy * t_i + cy[j];
         }
+        fprintf(fp, "%lf %lf %lf\n", t_i, fx, fy);
+
+        // calculate relative error
+        // 2-norm
+        double x_i = r * cos(t_i);
+        double y_i = r * sin(t_i);
+        x_2_norm += pow((x_i - fx), 2);
+        y_2_norm += pow((y_i - fy), 2);
+        // infinity-norm
+        if(fabs(x_i - fx) > x_inf_norm)
+            x_inf_norm = fabs(x_i - fx);
+        if(fabs(y_i - fy) > y_inf_norm)
+            y_inf_norm = fabs(y_i - fy);
     }
+    x_2_norm = sqrt(x_2_norm);
+    y_2_norm = sqrt(y_2_norm);
+    fprintf(err_x_fp, "%d %lf %lf\n", degree, x_2_norm, x_inf_norm);
+    fprintf(err_y_fp, "%d %lf %lf\n", degree, y_2_norm, y_inf_norm);
+
+    fprintf(fp, "\n\n");
 }
 
-void gnuplot();
+void record_polynomials(int degree, FILE *fp);
 
 int main() {
-    initial(m[2]);
-    gaussian_elimination(n + 1, m[2] + 1);
-    printf("%lfx^7 + %lfx^6 + %lfx^5 + %lfx^4 + %lfx^3 + %lfx^2 + %lfx + %lf\n", cx[7], cx[6], cx[5], cx[4], cx[3], cx[2], cx[1], cx[0]); 
-    printf("%lfy^7 + %lfy^6 + %lfy^5 + %lfy^4 + %lfy^3 + %lfy^2 + %lfy + %lf\n", cy[7], cy[6], cy[5], cy[4], cy[3], cy[2], cy[1], cy[0]);
-    horner_s_algorithm();
-    gnuplot();
+    FILE *fp_polynomials = fopen("polynomial.txt", "w");
+    FILE *fp_points; // 50 drawing points
+    FILE *err_x_fp = fopen("error_x.txt", "w");
+    FILE *err_y_fp = fopen("error_y.txt", "w");
+
+    fprintf(fp_polynomials, "# Gaussian elimination\n");
+    fprintf(err_x_fp, "# Gaussian elimination error in x\n# degree 2-norm infinity-norm\n");
+    fprintf(err_y_fp, "# Gaussian elimination error in y\n# degree 2-norm infinity-norm\n");
+    fp_points = fopen("gaussian.txt", "w");
+    fprintf(fp_points, "# t x y\n");
+    for(int i = 0; i < 5; i++) {
+        fprintf(fp_points, "# Degree = %d\n", m[i]);
+
+        initial(m[i]);
+        gaussian_elimination(n + 1, m[i] + 1);
+        horner_s_algorithm(50, m[i], fp_points, err_x_fp, err_y_fp);
+        
+        record_polynomials(m[i], fp_polynomials);
+    }
+    fclose(fp_points);
+    
+    
+    
+    
+    
+    gnuplot_gauss();
+
+    fclose(fp_polynomials);
+    fclose(err_x_fp);
+    fclose(err_y_fp);
     return 0;
 }
 
-void gnuplot() {
-    // r*cos(x)
-    FILE* gnu = _popen("gnuplot -persist", "w");
-    fprintf(gnu, "set terminal gif animate delay 50\n");
-    fprintf(gnu, "set output 'gauss x.gif'\n");
-    fprintf(gnu, "set xrange [0:2*pi]\n");
-    fprintf(gnu, "set yrange [-10:10]\n");
-    fprintf(gnu, "set xlabel 'x'\n");
-    fprintf(gnu, "set ylabel 'y'\n");
-    fprintf(gnu, "plot 10*cos(x) title 'r*cos(x)'\n");
-    fprintf(gnu, "replot %lf*x**7 + %lf*x**6 + %lf*x**5 + %lf*x**4 + %lf*x**3 + %lf*x**2 + %lf*x + %lf title 'gauss-Jordan %d deg p(x)'\n", cx[7], cx[6], cx[5], cx[4], cx[3], cx[2], cx[1], cx[0], m[2]);
-    _pclose(gnu);
-    // r*sin(y)
-    gnu = _popen("gnuplot -persist", "w");
-    fprintf(gnu, "set terminal gif animate delay 50\n");
-    fprintf(gnu, "set output 'gauss y.gif'\n");
-    fprintf(gnu, "set xrange [0:2*pi]\n");
-    fprintf(gnu, "set yrange [-10:10]\n");
-    fprintf(gnu, "set xlabel 'x'\n");
-    fprintf(gnu, "set ylabel 'y'\n");
-    fprintf(gnu, "plot 10*sin(x) title 'r*sin(y)'\n");
-    fprintf(gnu, "replot %lf*x**7 + %lf*x**6 + %lf*x**5 + %lf*x**4 + %lf*x**3 + %lf*x**2 + %lf*x + %lf title 'gauss-Jordan %d deg p(x)'\n", cy[7], cy[6], cy[5], cy[4], cy[3], cy[2], cy[1], cy[0], m[2]);
-    _pclose(gnu);
-    // circle
-    // circle with polynomial approximation
-    gnu = _popen("gnuplot -persist", "w");
-    fprintf(gnu, "set terminal gif animate delay 50\n");
-    fprintf(gnu, "set output 'gauss circle.gif'\n");
-    fprintf(gnu, "set parametric\n");
-    fprintf(gnu, "set samples 50\n");
-    fprintf(gnu, "set trange [0:2*pi]\n");
-    fprintf(gnu, "set xrange [-12:12]\n");
-    fprintf(gnu, "set yrange [-12:12]\n");
-    fprintf(gnu, "set xlabel 'x'\n");
-    fprintf(gnu, "set ylabel 'y'\n");
-    fprintf(gnu, "set size square\n");
-    // 真正的圓
-    fprintf(gnu, "plot 10*cos(t), 10*sin(t) title 'circle'\n");
-    // polynomial approximation
-    fprintf(gnu,
-            "replot (%lf*t**7 + %lf*t**6 + %lf*t**5 + %lf*t**4 + %lf*t**3 + %lf*t**2 + %lf*t + %lf), "
-            "(%lf*t**7 + %lf*t**6 + %lf*t**5 + %lf*t**4 + %lf*t**3 + %lf*t**2 + %lf*t + %lf) "
-            "title 'gauss-Jordan %d deg'\n",
-            cx[7], cx[6], cx[5], cx[4], cx[3], cx[2], cx[1], cx[0],
-            cy[7], cy[6], cy[5], cy[4], cy[3], cy[2], cy[1], cy[0],
-            m[2]);
-    _pclose(gnu);
+void record_polynomials(int degree, FILE *fp) {
+    fprintf(fp, "Degree %d:\n", degree);
+    fprintf(fp, "x(t) = ");
+    for(int i = 0; i <= degree; i++) {
+        if(i == 0)
+            fprintf(fp, "%lf ", cx[i]);
+        else
+            fprintf(fp, "+ %lf*t^%d ", cx[i], i);
+    }
+    fprintf(fp, "\n");
 
+    fprintf(fp, "y(t) = ");
+    for(int i = 0; i <= degree; i++) {
+        if(i == 0)
+            fprintf(fp, "%lf ", cy[i]);
+        else
+            fprintf(fp, "+ %lf*t^%d ", cy[i], i);
+    }
+    fprintf(fp, "\n\n");
 }

@@ -1,0 +1,7 @@
+# Gaussian elimination error in y
+# degree 2-norm infinity-norm
+5 0.362558 0.092515
+6 0.362558 0.092515
+7 0.013533 0.004440
+8 0.013533 0.004440
+9 0.000392 0.000197
