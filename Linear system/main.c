@@ -3,8 +3,9 @@
 #include <stdlib.h>
 #include "gnuplot.h"
 #define PI 3.14159265358979323846
+#define M 13 // number of polynomial degrees to test
 
-int r, n, m[5] = {5, 6, 7, 8, 9}; // degree of polynomial
+int r, n, m[M] = {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}; // degree of polynomial
 double A[16][16]; // coefficient matrix
 double B[16][16]; // A^T * A
 double cx[16]; // unknown vector -> a0, a1, a2, ...
@@ -48,6 +49,26 @@ void AT_multiply_V(int rows, int cols, double* vec, double* result) {
             result[i] += A[j][i] * vec[j];
         }
     }
+}
+
+double VT_multiply_V(int rows, double* v1, double* v2, int i) {
+    double result = 0.0;
+    for(i; i < rows; i++) {
+        result += v1[i] * v2[i];  
+    }
+    return result;
+}
+
+// v = t + |t|*e
+void create_reflect_vector(double A[16][16], double* v, int start_column, int rows) {
+    for(int i = start_column; i < rows; i++) 
+        v[i] = A[i][start_column];
+    double vTv = VT_multiply_V(rows, v, v, start_column);
+    double norm_v = sqrt(vTv);
+    if(v[start_column] >= 0)
+        v[start_column] += norm_v;
+    else 
+        v[start_column] -= norm_v;
 }
 
 void gaussian_elimination(int rows, int cols) {
@@ -103,69 +124,86 @@ void gaussian_elimination(int rows, int cols) {
     }
 }
 
-void QR_decomposition_new(int rows, int cols) {
-    // construct new A matrix
+void copy_matrix(int rows, int cols, double src[16][16], double dst[16][16]) {
     for(int i = 0; i < rows; i++) {
         for(int j = 0; j < cols; j++) {
-            A[i][j] = pow(t[i] - PI, j); // shift t by PI
+            dst[i][j] = src[i][j];
         }
     }
+}
 
-    // Gram-Schmidt process
-    double Q[16][16] = {0}; // orthogonal matrix
-    double R[16][16] = {0}; // upper triangular matrix
+void QR_decomposition_new(int rows, int cols, int isNew) {
+    if(isNew) {
+        AT_multiply_A(rows, cols);
+        AT_multiply_V(rows, cols, x, dx);
+        AT_multiply_V(rows, cols, y, dy);
+        rows = cols;
+    }
+    else {
+        for(int i = 0; i < rows; i++)
+            dx[i] = x[i];
+        for(int i = 0; i < rows; i++)
+            dy[i] = y[i];
+    }
 
-    for(int j = 0; j < cols; j++) {
-        // v_j = a_j
-        for(int i = 0; i < rows; i++) {
-            Q[i][j] = A[i][j];
-        }
-        // subtract projections
-        for(int k = 0; k < j; k++) {
-            double dot_product = 0.0;
-            double norm_sq = 0.0;
-            for(int i = 0; i < rows; i++) {
-                dot_product += A[i][j] * Q[i][k];
-                norm_sq += Q[i][k] * Q[i][k];
+    double R[16][16];
+    if(isNew)
+        copy_matrix(rows, cols, B, R);
+    else
+        copy_matrix(rows, cols, A, R); // we can directly modify B, but for clarity, use R to store result
+    // forward elimination
+    for(int i = 0; i < cols - 1; i++) { // i-th elimination 
+        double v[16] = {0};
+        create_reflect_vector(R, v, i, rows);
+        double vTv = VT_multiply_V(rows, v, v, i);
+        double t[16];
+        // H*A = R
+        for(int j = i; j < cols; j++) { // calculate j-th column of R
+            for(int k = i; k < rows; k++) // copy j-th column to t
+                t[k] = R[k][j];
+            // householder transformation
+            double vTt = VT_multiply_V(rows, v, t, i);
+            for(int k = i; k < rows; k++) {
+                R[k][j] -= 2.0 * (vTt / vTv) * v[k];
             }
-            double coeff = dot_product / norm_sq;
-            R[k][j] = coeff;
-            for(int i = 0; i < rows; i++) {
-                Q[i][j] -= coeff * Q[i][k];
-            }
         }
-        // normalize
-        double norm = 0.0;
-        for(int i = 0; i < rows; i++) {
-            norm += Q[i][j] * Q[i][j];
+        // H*b = new b
+        double vTdx = VT_multiply_V(rows, v, dx, i);
+        double vTdy = VT_multiply_V(rows, v, dy, i);
+        for(int k = i; k < rows; k++) {
+            dx[k] -= 2.0 * (vTdx / vTv) * v[k];
+            dy[k] -= 2.0 * (vTdy / vTv) * v[k];
         }
-        norm = sqrt(norm);
-        R[j][j] = norm;
-        for(int i = 0; i < rows; i++) {
-            Q[i][j] /= norm;
+    }
+    if(isNew == 0) { // last column need elimination for origin system
+        double v[16] = {0};
+        create_reflect_vector(R, v, cols - 1, rows);
+        double vTv = VT_multiply_V(rows, v, v, cols - 1);
+        double t[16];
+        for(int k = cols - 1; k < rows; k++) // copy j-th column to t
+            t[k] = R[k][cols - 1];
+            // householder transformation
+            double vTt = VT_multiply_V(rows, v, t, cols - 1);
+            for(int k = cols - 1; k < rows; k++) {
+                R[k][cols - 1] -= 2.0 * (vTt / vTv) * v[k];
+        }
+
+        double vTdx = VT_multiply_V(rows, v, dx, cols - 1);
+        double vTdy = VT_multiply_V(rows, v, dy, cols - 1);
+        for(int k = cols - 1; k < rows; k++) {
+            dx[k] -= 2.0 * (vTdx / vTv) * v[k];
+            dy[k] -= 2.0 * (vTdy / vTv) * v[k];
         }
     }
 
-    // compute Q^T * b
-    double Qt_x[16] = {0};
-    double Qt_y[16] = {0};
-    for(int i = 0; i < cols; i++) {
-        for(int j = 0; j < rows; j++) {
-            Qt_x[i] += Q[j][i] * x[j];
-            Qt_y[i] += Q[j][i] * y[j];
-        }
-    }
-
-    // back substitution to solve R * c = Q^T * b
+    // back substitution
     for(int i = cols - 1; i >= 0; i--) {
-        cx[i] = Qt_x[i];
-        cy[i] = Qt_y[i];
-        for(int j = i + 1; j < cols; j++) {
-            cx[i] -= R[i][j] * cx[j];
-            cy[i] -= R[i][j] * cy[j];
+        cx[i] = dx[i] / R[i][i];
+        cy[i] = dy[i] / R[i][i];
+        for(int j = i - 1; j >= 0; j--) {
+            dx[j] -= R[j][i] * cx[i];
+            dy[j] -= R[j][i] * cy[i];
         }
-        cx[i] /= R[i][i];
-        cy[i] /= R[i][i];
     }
 }
 
@@ -219,7 +257,7 @@ int main() {
     fprintf(err_x_fp, "# Gaussian elimination error in x\n# degree 2-norm infinity-norm\n");
     fprintf(err_y_fp, "# Gaussian elimination error in y\n# degree 2-norm infinity-norm\n");
     initial();
-    for(int i = 0; i < 5; i++) {
+    for(int i = 0; i < M; i++) {
         fprintf(fp_points, "# Degree = %d\n", m[i]);
 
         gaussian_elimination(n + 1, m[i] + 1);
@@ -233,26 +271,44 @@ int main() {
     fclose(fp_points);
     
     // method 2: QR decomposition ( New system )
-    fp_points = fopen("50p_QR_decomposition_new.txt", "w");
+    fp_points = fopen("50p_new_QR_decomposition.txt", "w");
     fprintf(fp_points, "# t x y\n");
     fprintf(fp_polynomials, "# QR decomposition ( New system )\n");
     fprintf(err_x_fp, "# QR decomposition ( New system ) error in x\n# degree 2-norm infinity-norm\n");
     fprintf(err_y_fp, "# QR decomposition ( New system ) error in y\n# degree 2-norm infinity-norm\n");
     initial();
-    for(int i = 0; i < 5; i++) {
+    for(int i = 0; i < M; i++) {
         fprintf(fp_points, "# Degree = %d\n", m[i]);
 
-        QR_decomposition_new(n + 1, m[i] + 1);
+        QR_decomposition_new(n + 1, m[i] + 1, 1);
         horner_s_algorithm(50, m[i], fp_points, err_x_fp, err_y_fp);
         
         record_polynomials(m[i], fp_polynomials);
     }
-    fprintf(fp_polynomials, "\n\n");
+    fprintf(fp_polynomials, "\n");
     fprintf(err_x_fp, "\n\n");
     fprintf(err_y_fp, "\n\n");
     fclose(fp_points);
     
-    
+    // method 3: QR decomposition ( Origin system )
+    fp_points = fopen("50p_origin_QR_decomposition.txt", "w");
+    fprintf(fp_points, "# t x y\n");
+    fprintf(fp_polynomials, "# QR decomposition ( Origin system )\n");
+    fprintf(err_x_fp, "# QR decomposition ( Origin system ) error in x\n# degree 2-norm infinity-norm\n");
+    fprintf(err_y_fp, "# QR decomposition ( Origin system ) error in y\n# degree 2-norm infinity-norm\n");
+    initial();
+    for(int i = 0; i < M; i++) {
+        fprintf(fp_points, "# Degree = %d\n", m[i]);
+
+        QR_decomposition_new(n + 1, m[i] + 1, 0);
+        horner_s_algorithm(50, m[i], fp_points, err_x_fp, err_y_fp);
+        
+        record_polynomials(m[i], fp_polynomials);
+    }
+    fprintf(fp_polynomials, "\n");
+    fprintf(err_x_fp, "\n\n");
+    fprintf(err_y_fp, "\n\n");
+    fclose(fp_points);
     
     gnuplot_gauss();
 
