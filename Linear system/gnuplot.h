@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 void gnuplot_gauss() {
-    // 1. Ã¸»s X ¤À¶q (x vs t)
+    // 1. Ã¸ï¿½s X ï¿½ï¿½ï¿½q (x vs t)
     FILE* gnu = _popen("gnuplot -persist", "w");
     fprintf(gnu, "set terminal gif animate delay 50\n");
     fprintf(gnu, "set output 'gauss x.gif'\n");
@@ -9,12 +9,12 @@ void gnuplot_gauss() {
     fprintf(gnu, "set yrange [-12:12]\n");
     fprintf(gnu, "set xlabel 't'\n");
     fprintf(gnu, "set ylabel 'x'\n");
-    // using 1:2 ¥Nªí¨Ï¥Î²Ä1¦C(t)·í¾î¶b¡A²Ä2¦C(x)·íÁa¶b
+    // using 1:2 ï¿½Nï¿½ï¿½ï¿½Ï¥Î²ï¿½1ï¿½C(t)ï¿½ï¿½ï¿½ï¿½bï¿½Aï¿½ï¿½2ï¿½C(x)ï¿½ï¿½ï¿½aï¿½b
     fprintf(gnu, "plot 10*cos(x) lc rgb 'blue' title 'Target: 10*cos(t)', \
-                  'gaussian.txt' index 2 using 1:2 with lines lw 2 lc rgb 'red' title 'Poly approx'\n");
+                  '50p_gaussian.txt' index 2 using 1:2 with lines lw 2 lc rgb 'red' title 'Poly approx'\n");
     _pclose(gnu);
 
-    // 2. Ã¸»s Y ¤À¶q (y vs t)
+    // 2. Ã¸ï¿½s Y ï¿½ï¿½ï¿½q (y vs t)
     gnu = _popen("gnuplot -persist", "w");
     fprintf(gnu, "set terminal gif animate delay 50\n");
     fprintf(gnu, "set output 'gauss y.gif'\n");
@@ -22,12 +22,12 @@ void gnuplot_gauss() {
     fprintf(gnu, "set yrange [-12:12]\n");
     fprintf(gnu, "set xlabel 't'\n");
     fprintf(gnu, "set ylabel 'y'\n");
-    // using 1:3 ¥Nªí¨Ï¥Î²Ä1¦C(t)·í¾î¶b¡A²Ä3¦C(y)·íÁa¶b
+    // using 1:3 ï¿½Nï¿½ï¿½ï¿½Ï¥Î²ï¿½1ï¿½C(t)ï¿½ï¿½ï¿½ï¿½bï¿½Aï¿½ï¿½3ï¿½C(y)ï¿½ï¿½ï¿½aï¿½b
     fprintf(gnu, "plot 10*sin(x) lc rgb 'blue' title 'Target: 10*sin(t)', \
-                  'gaussian.txt' index 2 using 1:3 with lines lw 2 lc rgb 'red' title 'Poly approx'\n");
+                  '50p_gaussian.txt' index 2 using 1:3 with lines lw 2 lc rgb 'red' title 'Poly approx'\n");
     _pclose(gnu);
 
-    // 3. Ã¸»s °Ñ¼Æ¦¡¶ê§Î (y vs x)
+    // 3. Ã¸ï¿½s ï¿½Ñ¼Æ¦ï¿½ï¿½ï¿½ï¿½ (y vs x)
     gnu = _popen("gnuplot -persist", "w");
     fprintf(gnu, "set terminal gif animate delay 50\n");
     fprintf(gnu, "set output 'gauss circle.gif'\n");
@@ -38,9 +38,9 @@ void gnuplot_gauss() {
     fprintf(gnu, "set ylabel 'y'\n");
     fprintf(gnu, "set parametric\n");
     fprintf(gnu, "set trange [0:2*pi]\n");
-    // using 2:3 ¥Nªí¨Ï¥Î²Ä2¦C(x)·í¾î¶b¡A²Ä3¦C(y)·íÁa¶b
+    // using 2:3 ï¿½Nï¿½ï¿½ï¿½Ï¥Î²ï¿½2ï¿½C(x)ï¿½ï¿½ï¿½ï¿½bï¿½Aï¿½ï¿½3ï¿½C(y)ï¿½ï¿½ï¿½aï¿½b
     fprintf(gnu, "plot 10*cos(t), 10*sin(t) lc rgb 'blue' title 'Target Circle', \
-                  'gaussian.txt' index 2 using 2:3 with lines lw 2 lc rgb 'red' title 'Poly approx'\n");
+                  '50p_gaussian.txt' index 2 using 2:3 with lines lw 2 lc rgb 'red' title 'Poly approx'\n");
                   
     _pclose(gnu);
 }

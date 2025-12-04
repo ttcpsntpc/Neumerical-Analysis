@@ -14,13 +14,13 @@ double dy[16]; // A^T * y
 double t[16]; // sample points
 double x[16], y[16]; // function values
 
-void initial(int degree) {
+void initial() {
     r = 10;  // radius
     n = 15; // divided circle into n parts -> n+1 sample points
     for(int i = 0; i <= n; i++) {
-        t[i] = 2 * PI / n * i;
-        x[i] = r * cos(2 * PI / n * i);
-        y[i] = r * sin(2 * PI / n * i);
+        t[i] = 2 * PI / n * i; // input value
+        x[i] = r * cos(t[i]); // ground truth
+        y[i] = r * sin(t[i]);
 
         for(int j = 0; j < 16; j++) { // initial all A matrix elements at once
             A[i][j] = pow(t[i], j);
@@ -28,8 +28,8 @@ void initial(int degree) {
     }
 }
 
+// B = A^T * A
 void AT_multiply_A(int rows, int cols) {
-    // B = A^T * A
     for(int i = 0; i < cols; i++) {
         for(int j = 0; j < cols; j++) {
             B[i][j] = 0;
@@ -40,8 +40,8 @@ void AT_multiply_A(int rows, int cols) {
     }
 }
 
+// result = A^T * vec
 void AT_multiply_V(int rows, int cols, double* vec, double* result) {
-    // result = A^T * vec
     for(int i = 0; i < cols; i++) {
         result[i] = 0;
         for(int j = 0; j < rows; j++) {
@@ -51,11 +51,12 @@ void AT_multiply_V(int rows, int cols, double* vec, double* result) {
 }
 
 void gaussian_elimination(int rows, int cols) {
-    // forward elimination
+    // Ax = b -> (A^T * A)x = A^T * b
     AT_multiply_A(rows, cols);
     AT_multiply_V(rows, cols, x, dx);
     AT_multiply_V(rows, cols, y, dy);
 
+    // forward elimination
     for(int i = 0; i < cols - 1; i++) {
         // partial pivoting
         int k = i;
@@ -102,6 +103,73 @@ void gaussian_elimination(int rows, int cols) {
     }
 }
 
+void QR_decomposition_new(int rows, int cols) {
+    // construct new A matrix
+    for(int i = 0; i < rows; i++) {
+        for(int j = 0; j < cols; j++) {
+            A[i][j] = pow(t[i] - PI, j); // shift t by PI
+        }
+    }
+
+    // Gram-Schmidt process
+    double Q[16][16] = {0}; // orthogonal matrix
+    double R[16][16] = {0}; // upper triangular matrix
+
+    for(int j = 0; j < cols; j++) {
+        // v_j = a_j
+        for(int i = 0; i < rows; i++) {
+            Q[i][j] = A[i][j];
+        }
+        // subtract projections
+        for(int k = 0; k < j; k++) {
+            double dot_product = 0.0;
+            double norm_sq = 0.0;
+            for(int i = 0; i < rows; i++) {
+                dot_product += A[i][j] * Q[i][k];
+                norm_sq += Q[i][k] * Q[i][k];
+            }
+            double coeff = dot_product / norm_sq;
+            R[k][j] = coeff;
+            for(int i = 0; i < rows; i++) {
+                Q[i][j] -= coeff * Q[i][k];
+            }
+        }
+        // normalize
+        double norm = 0.0;
+        for(int i = 0; i < rows; i++) {
+            norm += Q[i][j] * Q[i][j];
+        }
+        norm = sqrt(norm);
+        R[j][j] = norm;
+        for(int i = 0; i < rows; i++) {
+            Q[i][j] /= norm;
+        }
+    }
+
+    // compute Q^T * b
+    double Qt_x[16] = {0};
+    double Qt_y[16] = {0};
+    for(int i = 0; i < cols; i++) {
+        for(int j = 0; j < rows; j++) {
+            Qt_x[i] += Q[j][i] * x[j];
+            Qt_y[i] += Q[j][i] * y[j];
+        }
+    }
+
+    // back substitution to solve R * c = Q^T * b
+    for(int i = cols - 1; i >= 0; i--) {
+        cx[i] = Qt_x[i];
+        cy[i] = Qt_y[i];
+        for(int j = i + 1; j < cols; j++) {
+            cx[i] -= R[i][j] * cx[j];
+            cy[i] -= R[i][j] * cy[j];
+        }
+        cx[i] /= R[i][i];
+        cy[i] /= R[i][i];
+    }
+}
+
+// calculate polynomaial values and relative errors
 void horner_s_algorithm(int samples, int degree, FILE *fp, FILE *err_x_fp, FILE *err_y_fp) {
     double t_s = 2 * PI / (samples - 1);
     double x_2_norm = 0.0, y_2_norm = 0.0;
@@ -140,27 +208,49 @@ void record_polynomials(int degree, FILE *fp);
 
 int main() {
     FILE *fp_polynomials = fopen("polynomial.txt", "w");
-    FILE *fp_points; // 50 drawing points
+    FILE *fp_points; // 50 drawing points on different methods
     FILE *err_x_fp = fopen("error_x.txt", "w");
     FILE *err_y_fp = fopen("error_y.txt", "w");
 
+    // method 1: Gaussian elimination
+    fp_points = fopen("50p_gaussian.txt", "w");
+    fprintf(fp_points, "# t x y\n");
     fprintf(fp_polynomials, "# Gaussian elimination\n");
     fprintf(err_x_fp, "# Gaussian elimination error in x\n# degree 2-norm infinity-norm\n");
     fprintf(err_y_fp, "# Gaussian elimination error in y\n# degree 2-norm infinity-norm\n");
-    fp_points = fopen("gaussian.txt", "w");
-    fprintf(fp_points, "# t x y\n");
+    initial();
     for(int i = 0; i < 5; i++) {
         fprintf(fp_points, "# Degree = %d\n", m[i]);
 
-        initial(m[i]);
         gaussian_elimination(n + 1, m[i] + 1);
         horner_s_algorithm(50, m[i], fp_points, err_x_fp, err_y_fp);
         
         record_polynomials(m[i], fp_polynomials);
     }
+    fprintf(fp_polynomials, "\n");
+    fprintf(err_x_fp, "\n\n");
+    fprintf(err_y_fp, "\n\n");
     fclose(fp_points);
     
-    
+    // method 2: QR decomposition ( New system )
+    fp_points = fopen("50p_QR_decomposition_new.txt", "w");
+    fprintf(fp_points, "# t x y\n");
+    fprintf(fp_polynomials, "# QR decomposition ( New system )\n");
+    fprintf(err_x_fp, "# QR decomposition ( New system ) error in x\n# degree 2-norm infinity-norm\n");
+    fprintf(err_y_fp, "# QR decomposition ( New system ) error in y\n# degree 2-norm infinity-norm\n");
+    initial();
+    for(int i = 0; i < 5; i++) {
+        fprintf(fp_points, "# Degree = %d\n", m[i]);
+
+        QR_decomposition_new(n + 1, m[i] + 1);
+        horner_s_algorithm(50, m[i], fp_points, err_x_fp, err_y_fp);
+        
+        record_polynomials(m[i], fp_polynomials);
+    }
+    fprintf(fp_polynomials, "\n\n");
+    fprintf(err_x_fp, "\n\n");
+    fprintf(err_y_fp, "\n\n");
+    fclose(fp_points);
     
     
     
