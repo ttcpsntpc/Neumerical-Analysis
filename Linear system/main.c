@@ -113,7 +113,7 @@ void gaussian_elimination(int rows, int cols) {
         }
     }
 
-    // back substitution
+    // backward substitution
     for(int i = cols - 1; i >= 0; i--) {
         cx[i] = dx[i]/B[i][i];
         cy[i] = dy[i]/B[i][i];
@@ -196,7 +196,7 @@ void QR_decomposition_new(int rows, int cols, int isNew) {
         }
     }
 
-    // back substitution
+    // backward substitution
     for(int i = cols - 1; i >= 0; i--) {
         cx[i] = dx[i] / R[i][i];
         cy[i] = dy[i] / R[i][i];
@@ -236,8 +236,8 @@ void horner_s_algorithm(int samples, int degree, FILE *fp, FILE *err_x_fp, FILE 
     }
     x_2_norm = sqrt(x_2_norm);
     y_2_norm = sqrt(y_2_norm);
-    fprintf(err_x_fp, "%d %lf %lf\n", degree, x_2_norm, x_inf_norm);
-    fprintf(err_y_fp, "%d %lf %lf\n", degree, y_2_norm, y_inf_norm);
+    fprintf(err_x_fp, "%d %.10lf %.10lf\n", degree, x_2_norm, x_inf_norm);
+    fprintf(err_y_fp, "%d %.10lf %.10lf\n", degree, y_2_norm, y_inf_norm);
 
     fprintf(fp, "\n\n");
 }
@@ -308,13 +308,14 @@ int main() {
     fprintf(fp_polynomials, "\n");
     fprintf(err_x_fp, "\n\n");
     fprintf(err_y_fp, "\n\n");
-    fclose(fp_points);
-    
-    gnuplot_gauss();
 
+    fclose(fp_points);
     fclose(fp_polynomials);
     fclose(err_x_fp);
     fclose(err_y_fp);
+    
+    gnuplot_gauss();
+    plot_error();
     return 0;
 }
 
