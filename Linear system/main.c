@@ -209,11 +209,12 @@ void QR_decomposition_new(int rows, int cols, int isNew) {
 
 // calculate polynomaial values and relative errors
 void horner_s_algorithm(int samples, int degree, FILE *fp, FILE *err_x_fp, FILE *err_y_fp) {
+    double perturbation = 1e-6;
     double t_s = 2 * PI / (samples - 1);
     double x_2_norm = 0.0, y_2_norm = 0.0;
     double x_inf_norm = 0.0, y_inf_norm = 0.0;
     for(int i = 0; i < samples; i++) {
-        double t_i = t_s * i;
+        double t_i = t_s * i + perturbation; // avoid divide by zero
         double fx = cx[degree];
         double fy = cy[degree];
         for(int j = degree - 1; j >= 0; j--) {
@@ -222,17 +223,19 @@ void horner_s_algorithm(int samples, int degree, FILE *fp, FILE *err_x_fp, FILE 
         }
         fprintf(fp, "%lf %lf %lf\n", t_i, fx, fy);
 
-        // calculate absolute error
+        // calculate relative error 
+        // (modify different error functions by yourself)
+        // (remember to change the yrange in gnuplot if necessary)
         // 2-norm
         double x_i = r * cos(t_i);
         double y_i = r * sin(t_i);
-        x_2_norm += pow((x_i - fx), 2);
-        y_2_norm += pow((y_i - fy), 2);
+        x_2_norm += pow(((x_i - fx)/x_i), 2);
+        y_2_norm += pow(((y_i - fy)/y_i), 2);
         // infinity-norm
-        if(fabs(x_i - fx) > x_inf_norm)
-            x_inf_norm = fabs(x_i - fx);
-        if(fabs(y_i - fy) > y_inf_norm)
-            y_inf_norm = fabs(y_i - fy);
+        if(fabs((x_i - fx)/x_i) > x_inf_norm)
+            x_inf_norm = fabs((x_i - fx)/x_i);
+        if(fabs((y_i - fy)/y_i) > y_inf_norm)
+            y_inf_norm = fabs((y_i - fy)/y_i);
     }
     x_2_norm = sqrt(x_2_norm);
     y_2_norm = sqrt(y_2_norm);

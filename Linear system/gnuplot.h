@@ -74,7 +74,7 @@ void plot_error() {
     fprintf(gnu, "set xrange [3:15]\n");
     fprintf(gnu, "set logscale y\n"); 
     fprintf(gnu, "set format y '10^{%%L}'\n");
-    fprintf(gnu, "set yrange [1e-7:20]\n");
+    fprintf(gnu, "set yrange [1e-7:1e+6]\n");
 
     fprintf(gnu, "set title 'y(t) 2-norm Errors'\n");
     fprintf(gnu, "set xlabel 'degree of polynomial'\n");
@@ -114,7 +114,7 @@ void plot_error() {
     fprintf(gnu, "set xrange [3:15]\n");
     fprintf(gnu, "set logscale y\n"); 
     fprintf(gnu, "set format y '10^{%%L}'\n");
-    fprintf(gnu, "set yrange [1e-7:20]\n");
+    fprintf(gnu, "set yrange [1e-7:1e+6]\n");
 
     fprintf(gnu, "set title 'y(t) infinite-norm Errors'\n");
     fprintf(gnu, "set xlabel 'degree of polynomial'\n");
