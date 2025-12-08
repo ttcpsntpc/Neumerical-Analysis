@@ -222,7 +222,7 @@ void horner_s_algorithm(int samples, int degree, FILE *fp, FILE *err_x_fp, FILE 
         }
         fprintf(fp, "%lf %lf %lf\n", t_i, fx, fy);
 
-        // calculate relative error
+        // calculate alsolute error
         // 2-norm
         double x_i = r * cos(t_i);
         double y_i = r * sin(t_i);
@@ -338,4 +338,5 @@ void record_polynomials(int degree, FILE *fp) {
             fprintf(fp, "+ %lf*t^%d ", cy[i], i);
     }
     fprintf(fp, "\n\n");
+
 }
