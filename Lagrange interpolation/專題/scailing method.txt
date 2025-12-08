@@ -1,0 +1,47 @@
+1. 內插法
+最近鄰插值 (Nearest Neighbor)
+
+雙線性插值 (Bilinear)
+
+雙三次插值 (Bicubic)
+
+Lanczos filter
+
+Lanczos filter + 非銳化遮罩 (Unsharp Masking, USM)
+
+2. Edge-directed interpolation (NEDI)
+
+----------X--多張--3. Iterative back-projection (IBP)
+----------X--多張--4. Frequency-domain
+----------X--複雜/慢--sparse representation
+
+5. AI方法
+// SRCNN (第一篇用深度學習做 SR 的論文) 在 2014 年被提出
+FSRCNN - Fast Super-resolution Neural Network
+
+ESPCN - Efficient Sub-Pixel Convolutional Neural Network
+
+
+### 論文
+----------X--多張連續--1. Fast and robust multiframe super resolution
+----------X--自相似性--太慢-- Super-Resolution from a Single Image
+----------X--共軛梯度--不如用DL-- Fast and simple super‑resolution with single images
+----------X--多張連續-- Super-Resolution Image Reconstruction:A Technical Overview
+----------X--沒必要了-- super-resolution: a comprehensive survey
+
+### 可試試看方法
+內插分區塊overlap
+先抓特徵後放大再植入
+
+### PPT - super resolution
+what is SR
+why SR
+
+線性內插是lagrange的一種形式
+
+AI
+Microscopy-用在強化光學顯微鏡，減少繞射限制產生的模糊，提高解析度
+
+比較方法: SSIM PSNR
+結果
+
