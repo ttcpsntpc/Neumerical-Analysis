@@ -1,5 +1,22 @@
-21
-35
-49
-66
-84
+# Conjugate Gradient Iteration:
+20 22
+30 36
+40 51
+50 69
+60 86
+
+
+# SOR Iteration:
+# N=20
+1.00 386
+# N=30
+1.00 911
+# N=40
+1.45 4647
+# N=50
+1.45 8422
+# N=60
+1.45 11020
+
+
+# SSOR -> Conjugate Gradient Iteration:
