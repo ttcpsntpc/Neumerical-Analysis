@@ -1,1 +1,0 @@
-在寫conjugate gradient method的時候發現數值不對->結果是有些初始化沒定義好，和norm沒寫好，並且重新想error的算法

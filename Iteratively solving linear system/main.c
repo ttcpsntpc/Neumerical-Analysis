@@ -135,7 +135,7 @@ int conjugate_gradient(int N) {
 }
 void record_conjugate_relation(int N, int iteration) {
     for(int i = 0; i <= iteration; i++) {
-        for(int j = 0; j <= i; j++) {
+        for(int j = 0; j <= iteration; j++) {
             double val = A_conjugate(d[i], d[j], N);
             fprintf(fp_conj_relation, "%lf ", val);
         }
@@ -168,6 +168,49 @@ int SOR(int N, double w) {
     return iteration;
 }
 
+int SSOR(int N, double w, int max_iter) {
+    double r[MAX_N];
+    double error;
+    int iteration = 0;
+    error = 100;
+    if(max_iter <= 0) 
+        max_iter = 1e9;
+    while(error > EPSILON && iteration < max_iter) {
+        if(iteration % 2 == 0) {
+            for(int i = 0; i < N; i++) {
+                double sum = b[i];
+                for(int j = 0; j < N; j++) 
+                    sum -= A[i][j]*x[j];
+                x[i] += w * sum / A[i][i];
+            }
+            // compute the residual
+            for(int i = 0; i < N; i++) {
+                double Ax = 0;
+                for(int j = 0; j < N; j++)
+                    Ax += A[i][j]*x[j];
+                r[i] = b[i] - Ax;
+            }
+        } else {
+            for(int i = N - 1; i >= 0; i--) {
+                double sum = b[i];
+                for(int j = 0; j < N; j++) 
+                    sum -= A[i][j]*x[j];
+                x[i] += w * sum / A[i][i];
+            }
+            // compute the residual
+            for(int i = 0; i < N; i++) {
+                double Ax = 0;
+                for(int j = 0; j < N; j++)
+                    Ax += A[i][j]*x[j];
+                r[i] = b[i] - Ax;
+            }
+        }
+        error = norm_inf(r, N);
+        iteration++;
+    }
+    return iteration;
+}
+
 int main() {
     fp_iter = fopen("src/iteration.txt", "w");
     fp_time = fopen("src/time.txt", "w");
@@ -188,7 +231,6 @@ int main() {
     fprintf(fp_sol, "# Conjugate Gradient Solution:\n");
     for(int i = 0; i < 5; i++) {
         fprintf(fp_dir, "# N=%d\n", n[i]);
-        fprintf(fp_time, "# N=%d\n", n[i]);
         fprintf(fp_conj_relation, "# N=%d\n", n[i]);
         fprintf(fp_sol, "# N=%d\n", n[i]);
         
@@ -215,12 +257,10 @@ int main() {
     fprintf(fp_iter, "\n\n# SOR Iteration:\n");
     fprintf(fp_time, "\n\n# SOR Time:\n");
     for(int i = 0; i < 5; i++) {
-        fprintf(fp_iter, "# N=%d\n", n[i]);
-        fprintf(fp_time, "# N=%d\n", n[i]);
         double best_w, best_time;
         int min_iteration = 1e9;
         printf("N=%d:\n", n[i]);
-        for(double w = 1.00; w <= 1.5; w += 0.05) {
+        for(double w = 1.00; w <= 1.5; w += 0.1) {
             int N = n[i];
             init_A(N);
             init_b(N);
@@ -229,29 +269,57 @@ int main() {
             start = clock();
             iteration = SOR(N, w);
             end = clock();
-            cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 
             printf("(%.2lf, %d) ", w, iteration);
             if(iteration < min_iteration) {
                 min_iteration = iteration;
                 best_w = w;
-                best_time = cpu_time_used;
+                best_time = ((double) (end - start)) / CLOCKS_PER_SEC;
             }
         }
         printf("\nBest w: %.2lf with %d iterations\n", best_w, min_iteration);
-        fprintf(fp_iter, "%.2lf %d\n", best_w, min_iteration);
-        fprintf(fp_time, "%.2lf %lf\n", best_w, best_time);
+        fprintf(fp_iter, "# best w: %.2lf\n", best_w);
+        fprintf(fp_iter, "%d %d\n", n[i], min_iteration);
+        fprintf(fp_time, "# best w: %.2lf\n", best_w);
+        fprintf(fp_time, "%d %lf\n", n[i], best_time);
     }
 
     // SSOR -> conjugate gradient
     fprintf(fp_iter, "\n\n# SSOR -> Conjugate Gradient Iteration:\n");
     fprintf(fp_time, "\n\n# SSOR -> Conjugate Gradient Time:\n");
+    fprintf(fp_dir, "\n\n# SSOR -> Conjugate Gradient Direction:\n");
+    fprintf(fp_sol, "\n\n# SSOR -> Conjugate Gradient Solution:\n");
     for(int i = 0; i < 5; i++) {
-        int N = n[i];
-        init_A(N);
-        init_b(N);
-        copy_x(N);
+        fprintf(fp_dir, "# N=%d\n", n[i]);
+        fprintf(fp_sol, "# N=%d\n", n[i]);
+        double best_w, best_time;
+        int min_iteration = 1e9;
+        printf("N=%d:\n", n[i]);
+        for(double w = 1.00; w <= 1.5; w += 0.1) {
+            int N = n[i];
+            init_A(N);
+            init_b(N);
+            copy_x(N);
 
+            start = clock();
+            iteration = SSOR(N, w, 10);
+            iteration += conjugate_gradient(N);
+            end = clock();
+
+            printf("(%.2lf, %d) ", w, iteration);
+            if(iteration < min_iteration) {
+                min_iteration = iteration;
+                best_w = w;
+                best_time = ((double) (end - start)) / CLOCKS_PER_SEC;
+            }
+            fprintf(fp_dir, "\n\n");
+            fprintf(fp_sol, "\n\n");
+        }
+        printf("\nBest w: %.2lf with %d iterations\n", best_w, min_iteration);
+        fprintf(fp_iter, "# best w: %.2lf\n", best_w);
+        fprintf(fp_iter, "%d %d\n", n[i], min_iteration);
+        fprintf(fp_time, "# best w: %.2lf\n", best_w);
+        fprintf(fp_time, "%d %lf\n", n[i], best_time);
     }
 
     fclose(fp_iter);

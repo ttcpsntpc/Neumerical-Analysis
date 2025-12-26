@@ -1,22 +1,32 @@
 # Conjugate Gradient Iteration:
 20 22
-30 36
-40 51
-50 69
-60 86
+30 35
+40 50
+50 65
+60 84
 
 
 # SOR Iteration:
-# N=20
-1.00 386
-# N=30
-1.00 911
-# N=40
-1.45 4647
-# N=50
-1.45 8422
-# N=60
-1.45 11020
+# best w: 1.10
+20 212
+# best w: 1.10
+30 365
+# best w: 1.40
+40 1268
+# best w: 1.40
+50 2725
+# best w: 1.40
+60 49077
 
 
 # SSOR -> Conjugate Gradient Iteration:
+# best w: 1.00
+20 32
+# best w: 1.30
+30 43
+# best w: 1.10
+40 59
+# best w: 1.00
+50 75
+# best w: 1.20
+60 94
