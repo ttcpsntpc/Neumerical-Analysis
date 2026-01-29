@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\88690\\Desktop\\\u6578\u503C\u5206\u6790opengl display\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{012B9970-3AED-4543-8B10-6343835A1D71}|Project1\\Project1.vcxproj|C:\\Users\\88690\\Desktop\\\u6578\u503C\u5206\u6790opengl display\\draw.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{012B9970-3AED-4543-8B10-6343835A1D71}|Project1\\Project1.vcxproj|solutionrelative:draw.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "draw.c",
+              "DocumentMoniker": "C:\\Users\\88690\\Desktop\\\u6578\u503C\u5206\u6790opengl display\\draw.c",
+              "RelativeDocumentMoniker": "draw.c",
+              "ToolTip": "C:\\Users\\88690\\Desktop\\\u6578\u503C\u5206\u6790opengl display\\draw.c",
+              "RelativeToolTip": "draw.c",
+              "ViewState": "AgIAAJIAAAAAAAAAAAAqwJ4AAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-10-12T18:48:52.874Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
